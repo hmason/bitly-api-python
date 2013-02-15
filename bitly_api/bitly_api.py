@@ -145,9 +145,18 @@ class Connection(object):
         data = self._call(self.host, 'v3/clicks_by_minute', params, self.secret)
         return data['data']['clicks_by_minute']
 
-    def link_clicks(self, link, **kwargs):
-        params = dict(link=link)
-        data = self._call_oauth2_metrics("v3/link/clicks", params, **kwargs)
+    def link_clicks(self, link, unit=None, units=-1, timezone=None, rollup=False, limit=100, unit_reference_ts="now"):
+        params = dict(link=link, limit=str(limit), unit_reference_ts=unit_reference_ts, units=str(units))
+        if unit:
+            params['unit'] = unit
+        if timezone:
+            params['timezone'] = timezone
+        if rollup:
+            params['rollup'] = "true"
+        else:
+            params['rollup'] = "false"
+
+        data = self._call_oauth2_metrics("v3/link/clicks", params)
         return data["link_clicks"]
 
     def link_encoders_count(self, link, **kwargs):
